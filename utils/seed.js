@@ -18,17 +18,17 @@ connection.once('open', async () => {
     }
 
 
-  // Create empty array to hold the students
+  // Create empty array to hold the users
   const users = [];
 
   // Loop 20 times -- add students to the students array
   for (let i = 0; i < 20; i++) {
     // Get some random assignment objects using a helper function that we imported from ./data
     const thoughts = getRandomThoughts(20);
-
+    const friends = getRandomUser(5);
     const username = getRandomUser();
-
-    const friends = `${first}${Math.floor(Math.random() * (99 - 18 + 1) + 18)}`;
+    const email = `${username}@email.com`;
+    
 
     users.push({
       username,
