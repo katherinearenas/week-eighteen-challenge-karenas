@@ -4,7 +4,7 @@ module.exports = {
   // Get all Users
   async getUsers(req, res) {
     try {
-      const users = await User.find().populate('thoughts');
+      const users = await User.find();
       res.json(users); // response will return the users from the db
     } catch (err) {
       console.log(err);
@@ -64,17 +64,7 @@ module.exports = {
         return res.status(404).json({ message: 'No such User exists' });
       }
 
-      // const course = await Course.findOneAndUpdate(
-      //   { Users: req.params.UserId },
-      //   { $pull: { Users: req.params.UserId } },
-      //   { new: true }
-      // );
-
-      // if (!course) {
-      //   return res.status(404).json({
-      //     message: 'User deleted, but no courses found',
-      //   });
-      // }
+  
 
       res.json({ message: 'User successfully deleted' });
     } catch (err) {
@@ -85,7 +75,7 @@ module.exports = {
 
   // Add an Friend to a User // localhost:3001/api/users/:userId/friends/:friendId
   async addFriend(req, res) {
-    console.log('You are adding an Friend');
+    console.log('You are adding a Friend');
     console.log(req.body);
 
     try {
@@ -100,6 +90,12 @@ module.exports = {
           .status(404)
           .json({ message: 'No User found with that ID :(' });
       }
+
+      await User.findByIdAndUpdate(
+        { _id: req.params.friendId },
+        { $addToSet: { friends: req.params.userId } },
+        { runValidators: true, new: true }
+      )
 
       res.json(user);
     } catch (err) {
