@@ -24,17 +24,36 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  // Create a course
+  // Create a thought
   async createThought(req, res) {
-    try {
-      const thought = await Thought.create(req.body);
-      res.json(thought);
+    try{
+      const { username, thoughtText } = req.body;
+      const user = await User.findOne({ username });
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      const newThought = await Thought.create({
+        thoughtText,
+        username,
+      });
+      await User.findOneAndUpdate(
+        { username },
+        { $push: { thoughts: newThought._id } },
+        { new: true }
+      );
+      res.status(201).json(newThought);
     } catch (err) {
-      console.log(err);
-      return res.status(500).json(err);
+      res.status(500).json(err);
     }
+    // try {
+    //   const thought = await Thought.create(req.body);
+    //   res.json(thought);
+    // } catch (err) {
+    //   console.log(err);
+    //   return res.status(500).json(err);
+    // }
   },
-  // Delete a course
+  // Delete a thought
   async deleteThought(req, res) {
     try {
       const thought = await Thought.findOneAndDelete({ _id: req.params.thoughtId });
@@ -48,7 +67,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  // Update a course
+  // Update a thought
   async updateThought(req, res) {
     try {
       const thought = await Thought.findOneAndUpdate(
